@@ -42,3 +42,5 @@ Feel free to add on or change as you see fit.
 
     
   There are 4 different test suites and 17 total tests specific to this application. The test suites do require you to download Jest. 
+  
+  ![](Assets/screenshot.jpeg)
