@@ -127,9 +127,14 @@ function manager() {
     })
 }
 function renderResults(){
+    if(employeesArr.length<1) {
+        console.log("you must create an employee first!")
+        firstQuestion();
+    } else {
     writeFileAsync(outputPath, render(employeesArr)).then(
         console.log('File created in "Output" directory')
     )
+    }
 }
 
 firstQuestion();
