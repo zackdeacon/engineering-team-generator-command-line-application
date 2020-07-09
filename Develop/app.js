@@ -4,16 +4,19 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+const util = require('util');
 const employeesArr = [];
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
+const writeFileAsync = util.promisify(fs.writeFile);
 
 const render = require("./lib/htmlRenderer");
 
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+function firstQuestion() {
 inquirer.prompt([
      {
         type:"list",
@@ -29,9 +32,10 @@ inquirer.prompt([
     } else if (answers.employeeType === "Manager") {
         manager();
     } else {
-        // renderResults();
+        renderResults();
     }
 })
+}
 
 function engineer() {
     inquirer.prompt([
@@ -55,8 +59,11 @@ function engineer() {
             message:"What is the Engineers Github username?",
             name: "github"
         }
-    ]).then(function(answers){
-    console.log(answers);
+    ]).then(function(addAnswers){
+    const newEmployee = new Engineer(addAnswers.name, addAnswers.id, addAnswers.email, addAnswers.github)
+    employeesArr.push(newEmployee);
+    console.log(employeesArr);
+    firstQuestion();
     })
 }
 
@@ -82,7 +89,12 @@ function intern() {
             message:"What is the school that the intern is attending?",
             name: "school"
         }
-    ])
+    ]).then(function(addAnswers){
+        const newEmployee = new Intern(addAnswers.name, addAnswers.id, addAnswers.email, addAnswers.school)
+        employeesArr.push(newEmployee);
+        console.log(employeesArr);
+        firstQuestion();
+    })
 }
 
 function manager() {
@@ -105,10 +117,23 @@ function manager() {
         {
             type:"input",
             message:"What is the Managers office number?",
-            name: "office number"
+            name: "officeNumber"
         }
-    ])
+    ]).then(function(addAnswers){
+        const newEmployee = new Manager(addAnswers.name, addAnswers.id, addAnswers.email, addAnswers.officeNumber)
+        employeesArr.push(newEmployee);
+        console.log(employeesArr);
+        firstQuestion();
+    })
 }
+function renderResults(){
+    writeFileAsync(outputPath, render(employeesArr)).then(
+        console.log('File created in "Output" directory')
+    )
+}
+
+firstQuestion();
+
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
